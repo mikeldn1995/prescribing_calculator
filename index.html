@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindOf - Liquid Medication Prescribing Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-screen {
+            text-align: center;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .login-image {
+            max-width: 200px;
+            width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            display: none;
+        }
+
+        .logo-text {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2C3E50;
+            letter-spacing: -0.5px;
+            margin-top: 10px;
+        }
+
+        .subtitle {
+            color: #5A6C7D;
+            margin-bottom: 40px;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .pin-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pin-input input {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: none;
+        }
+
+        .pin-input input::-webkit-outer-spin-button,
+        .pin-input input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .pin-input input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            min-height: 44px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .calculator-screen {
+            display: none;
+        }
+
+        .calculator-screen.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E8F2FF;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            color: #2C3E50;
+            font-size: 32px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2C3E50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .bottle-size-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .bottle-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bottle-option:hover {
+            border-color: #4A90E2;
+            transform: translateY(-2px);
+        }
+
+        .bottle-option.selected {
+            border-color: #4A90E2;
+            background: #E8F2FF;
+        }
+
+        .bottle-option input[type="radio"] {
+            display: none;
+        }
+
+        .bottle-option label {
+            cursor: pointer;
+            font-weight: 600;
+            color: #2C3E50;
+        }
+
+        .custom-bottle-input {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .custom-bottle-input.active {
+            display: block;
+        }
+
+        .custom-bottle-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 44px;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: none;
+        }
+
+        .custom-bottle-input input::-webkit-outer-spin-button,
+        .custom-bottle-input input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .custom-bottle-input input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .phase {
+            background: #F8F9FA;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4A90E2;
+        }
+
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .phase-title {
+            font-weight: 600;
+            color: #2C3E50;
+        }
+
+        .remove-phase-btn {
+            background: #e74c3c;
+            padding: 5px 15px;
+            font-size: 12px;
+            min-height: 36px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #5A6C7D;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: none;
+        }
+
+        .form-group input::-webkit-outer-spin-button,
+        .form-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .maintenance-phase {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .maintenance-phase .phase-title {
+            color: #2e7d32;
+        }
+
+        .maintenance-days {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .total-days {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .total-days-label {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .total-days-value {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .add-phase-btn {
+            width: 100%;
+            background: #28a745;
+            margin-top: 0;
+        }
+
+        .add-phase-btn:hover {
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .info-text {
+            color: #5A6C7D;
+            font-size: 14px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* Large Tablets and Small Desktops */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 95%;
+                padding: 35px;
+            }
+        }
+
+        /* Tablets */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+                border-radius: 15px;
+            }
+
+            .logo-text {
+                font-size: 36px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .total-days-value {
+                font-size: 42px;
+            }
+
+            .bottle-size-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .bottle-option {
+                padding: 18px 12px;
+                min-height: 70px;
+            }
+        }
+
+        /* Large Phones and Small Tablets */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .container {
+                padding: 25px 20px;
+                border-radius: 15px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            }
+
+            .logo-text {
+                font-size: 32px;
+            }
+
+            .logo-container {
+                margin-bottom: 25px;
+            }
+
+            .login-image {
+                max-width: 150px;
+                margin: 15px 0;
+            }
+
+            .form-image {
+                margin: 15px 0;
+            }
+
+            .subtitle {
+                font-size: 15px;
+                margin-bottom: 30px;
+            }
+
+            .pin-input {
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+
+            .pin-input input {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .logout-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .section {
+                margin-bottom: 25px;
+            }
+
+            .section-title {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            .form-group {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .form-group input {
+                padding: 14px;
+                font-size: 16px;
+                min-height: 48px;
+            }
+
+            .bottle-size-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .bottle-option {
+                padding: 16px 10px;
+                min-height: 65px;
+                font-size: 15px;
+            }
+
+            .phase {
+                padding: 18px;
+                margin-bottom: 12px;
+            }
+
+            .phase-header {
+                margin-bottom: 12px;
+            }
+
+            .remove-phase-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+                min-height: 40px;
+            }
+
+            .total-days {
+                padding: 20px;
+                margin-top: 25px;
+                border-radius: 12px;
+            }
+
+            .total-days-label {
+                font-size: 15px;
+                margin-bottom: 8px;
+            }
+
+            .total-days-value {
+                font-size: 36px;
+            }
+
+            .maintenance-days {
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 14px 30px;
+                font-size: 15px;
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .add-phase-btn {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+
+        /* Small Phones */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                padding-top: 15px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 12px;
+            }
+
+            .logo-text {
+                font-size: 28px;
+            }
+
+            .login-image {
+                max-width: 120px;
+                margin: 12px 0;
+            }
+
+            .form-image {
+                margin: 12px 0;
+            }
+
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 25px;
+            }
+
+            .pin-input {
+                gap: 6px;
+            }
+
+            .pin-input input {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .bottle-size-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .bottle-option {
+                padding: 14px 8px;
+                min-height: 60px;
+                font-size: 14px;
+            }
+
+            .phase {
+                padding: 15px;
+            }
+
+            .form-group input {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            .total-days {
+                padding: 18px;
+            }
+
+            .total-days-value {
+                font-size: 32px;
+            }
+
+            .maintenance-days {
+                font-size: 15px;
+            }
+
+            .info-text {
+                font-size: 13px;
+            }
+        }
+
+        /* Very Small Phones */
+        @media (max-width: 360px) {
+            .container {
+                padding: 15px 12px;
+            }
+
+            .logo-text {
+                font-size: 24px;
+            }
+
+            .login-image {
+                max-width: 100px;
+                margin: 10px 0;
+            }
+
+            .form-image {
+                margin: 10px 0;
+            }
+
+            .pin-input input {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .bottle-option {
+                padding: 12px 6px;
+                font-size: 13px;
+            }
+
+            .total-days-value {
+                font-size: 28px;
+            }
+        }
+
+        /* Landscape orientation for phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                max-height: 95vh;
+                overflow-y: auto;
+            }
+
+            .logo-text {
+                font-size: 26px;
+            }
+
+            .login-image {
+                max-width: 120px;
+            }
+
+            .form-image {
+                margin: 10px 0;
+            }
+
+            .subtitle {
+                margin-bottom: 20px;
+            }
+
+            .pin-input input {
+                width: 50px;
+                height: 50px;
+            }
+
+            .section {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                transform: none;
+            }
+
+            .bottle-option:hover {
+                transform: none;
+            }
+
+            .btn:active {
+                opacity: 0.8;
+            }
+
+            .bottle-option:active {
+                opacity: 0.8;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="container">
+        <div class="login-screen" id="loginScreen">
+            <div class="logo-container">
+                <div class="logo-text">MindOf</div>
+            </div>
+            <img src="images/Untitled design.png" alt="MindOf" class="login-image">
+            <div class="subtitle">Liquid Medication Prescribing Calculator</div>
+            <div class="pin-input">
+                <input type="text" maxlength="1" id="pin1" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+                <input type="text" maxlength="1" id="pin2" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+                <input type="text" maxlength="1" id="pin3" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+                <input type="text" maxlength="1" id="pin4" autocomplete="off" inputmode="numeric" pattern="[0-9]">
+            </div>
+            <div class="error-message" id="errorMessage"></div>
+            <button class="btn" onclick="checkPin()">Login</button>
+        </div>
+
+        <!-- Calculator Screen -->
+        <div class="calculator-screen" id="calculatorScreen">
+            <div class="header">
+                <h1>MindOf Calculator</h1>
+                <button class="btn logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="form-image-container">
+                <img src="images/19d2b9_2ce3d3d9e9ae43dc8ac5a4e51775ce04~mv2.png" alt="MindOf" class="form-image">
+            </div>
+
+            <!-- Bottle Size Selection -->
+            <div class="section">
+                <div class="section-title">1. Select Bottle Size</div>
+                <div class="bottle-size-options">
+                    <div class="bottle-option" onclick="selectBottleSize('100')">
+                        <input type="radio" name="bottleSize" id="bottle100" value="100">
+                        <label for="bottle100">100ml</label>
+                    </div>
+                    <div class="bottle-option" onclick="selectBottleSize('150')">
+                        <input type="radio" name="bottleSize" id="bottle150" value="150">
+                        <label for="bottle150">150ml</label>
+                    </div>
+                    <div class="bottle-option" onclick="selectBottleSize('200')">
+                        <input type="radio" name="bottleSize" id="bottle200" value="200">
+                        <label for="bottle200">200ml</label>
+                    </div>
+                    <div class="bottle-option" onclick="selectBottleSize('other')">
+                        <input type="radio" name="bottleSize" id="bottleOther" value="other">
+                        <label for="bottleOther">Other</label>
+                    </div>
+                </div>
+                <div class="custom-bottle-input" id="customBottleInput">
+                    <input type="number" id="customBottleSize" placeholder="Enter bottle size in ml" min="1" step="0.1">
+                </div>
+            </div>
+
+            <!-- Titration Phases -->
+            <div class="section">
+                <div class="section-title">2. Titration Phases</div>
+                <div id="phasesContainer">
+                    <div class="phase" data-phase="1">
+                        <div class="phase-header">
+                            <div class="phase-title">First Phase</div>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <label>Number of Days</label>
+                                <input type="number" class="phase-days" data-phase="1" min="1" step="1" placeholder="Days">
+                            </div>
+                            <div>
+                                <label>Dose (ml per day)</label>
+                                <input type="number" class="phase-dose" data-phase="1" min="0" step="0.1" placeholder="ml/day">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn add-phase-btn" onclick="addPhase()">+ Add Phase</button>
+            </div>
+
+            <!-- Maintenance Phase -->
+            <div class="section">
+                <div class="section-title">3. Maintenance Phase</div>
+                <div class="phase maintenance-phase">
+                    <div class="phase-header">
+                        <div class="phase-title">Maintenance Phase</div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <label>Dose (ml per day)</label>
+                            <input type="number" id="maintenanceDose" min="0" step="0.1" placeholder="ml/day">
+                        </div>
+                        <div>
+                            <label>Number of Days</label>
+                            <div class="maintenance-days" id="maintenanceDays">Calculated automatically</div>
+                            <div class="info-text">Based on remaining medication</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Days -->
+            <div class="total-days">
+                <div class="total-days-label">Total Number of Days</div>
+                <div class="total-days-value" id="totalDays">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PIN = '5346';
+        let phaseCount = 1;
+
+        // PIN Input Handling
+        const pinInputs = ['pin1', 'pin2', 'pin3', 'pin4'];
+        
+        pinInputs.forEach((id, index) => {
+            const input = document.getElementById(id);
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < 3) {
+                    document.getElementById(pinInputs[index + 1]).focus();
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    document.getElementById(pinInputs[index - 1]).focus();
+                }
+            });
+        });
+
+        function checkPin() {
+            const enteredPin = pinInputs.map(id => document.getElementById(id).value).join('');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (enteredPin === CORRECT_PIN) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('calculatorScreen').classList.add('active');
+                errorMessage.textContent = '';
+                // Attach listeners after calculator screen is shown
+                attachPhaseListeners();
+            } else {
+                errorMessage.textContent = 'Incorrect PIN. Please try again.';
+                pinInputs.forEach(id => {
+                    document.getElementById(id).value = '';
+                });
+                document.getElementById('pin1').focus();
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('calculatorScreen').classList.remove('active');
+            pinInputs.forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('pin1').focus();
+            resetCalculator();
+        }
+
+        function resetCalculator() {
+            // Reset bottle size
+            document.querySelectorAll('input[name="bottleSize"]').forEach(radio => {
+                radio.checked = false;
+            });
+            document.querySelectorAll('.bottle-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('customBottleInput').classList.remove('active');
+            document.getElementById('customBottleSize').value = '';
+            
+            // Reset phases
+            const phasesContainer = document.getElementById('phasesContainer');
+            phasesContainer.innerHTML = `
+                <div class="phase" data-phase="1">
+                    <div class="phase-header">
+                        <div class="phase-title">First Phase</div>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <label>Number of Days</label>
+                            <input type="number" class="phase-days" data-phase="1" min="1" step="1" placeholder="Days">
+                        </div>
+                        <div>
+                            <label>Dose (ml per day)</label>
+                            <input type="number" class="phase-dose" data-phase="1" min="0" step="0.1" placeholder="ml/day">
+                        </div>
+                    </div>
+                </div>
+            `;
+            phaseCount = 1;
+            
+            // Reset maintenance
+            document.getElementById('maintenanceDose').value = '';
+            document.getElementById('maintenanceDays').textContent = 'Calculated automatically';
+            
+            // Reset total
+            document.getElementById('totalDays').textContent = '0';
+            
+            // Reattach event listeners
+            attachPhaseListeners();
+        }
+
+        function selectBottleSize(size) {
+            document.querySelectorAll('.bottle-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            if (size === 'other') {
+                document.getElementById('bottleOther').checked = true;
+                document.getElementById('bottleOther').parentElement.classList.add('selected');
+                document.getElementById('customBottleInput').classList.add('active');
+                document.getElementById('customBottleSize').focus();
+            } else {
+                document.getElementById(`bottle${size}`).checked = true;
+                document.getElementById(`bottle${size}`).parentElement.classList.add('selected');
+                document.getElementById('customBottleInput').classList.remove('active');
+                document.getElementById('customBottleSize').value = '';
+            }
+            calculateMaintenance();
+        }
+
+        function addPhase() {
+            phaseCount++;
+            const phasesContainer = document.getElementById('phasesContainer');
+            const newPhase = document.createElement('div');
+            newPhase.className = 'phase';
+            newPhase.setAttribute('data-phase', phaseCount);
+            newPhase.innerHTML = `
+                <div class="phase-header">
+                    <div class="phase-title">Phase ${phaseCount}</div>
+                    <button class="btn remove-phase-btn" onclick="removePhase(${phaseCount})">Remove</button>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label>Number of Days</label>
+                        <input type="number" class="phase-days" data-phase="${phaseCount}" min="1" step="1" placeholder="Days">
+                    </div>
+                    <div>
+                        <label>Dose (ml per day)</label>
+                        <input type="number" class="phase-dose" data-phase="${phaseCount}" min="0" step="0.1" placeholder="ml/day">
+                    </div>
+                </div>
+            `;
+            phasesContainer.appendChild(newPhase);
+            attachPhaseListeners();
+        }
+
+        function removePhase(phaseNum) {
+            const phase = document.querySelector(`[data-phase="${phaseNum}"]`);
+            if (phase) {
+                phase.remove();
+                calculateMaintenance();
+            }
+        }
+
+        function attachPhaseListeners() {
+            // Use event delegation on the phases container for dynamic phases
+            const phasesContainer = document.getElementById('phasesContainer');
+            if (phasesContainer) {
+                phasesContainer.addEventListener('input', function(e) {
+                    if (e.target.classList.contains('phase-days') || e.target.classList.contains('phase-dose')) {
+                        calculateMaintenance();
+                    }
+                });
+                phasesContainer.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('phase-days') || e.target.classList.contains('phase-dose')) {
+                        calculateMaintenance();
+                    }
+                });
+            }
+            
+            // Maintenance dose listener
+            const maintenanceDose = document.getElementById('maintenanceDose');
+            if (maintenanceDose) {
+                maintenanceDose.addEventListener('input', calculateMaintenance);
+                maintenanceDose.addEventListener('change', calculateMaintenance);
+            }
+            
+            // Custom bottle size listener
+            const customBottleSize = document.getElementById('customBottleSize');
+            if (customBottleSize) {
+                customBottleSize.addEventListener('input', calculateMaintenance);
+                customBottleSize.addEventListener('change', calculateMaintenance);
+            }
+            
+            // Bottle size radio button listeners
+            document.querySelectorAll('input[name="bottleSize"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'other') {
+                        selectBottleSize('other');
+                    } else {
+                        selectBottleSize(this.value);
+                    }
+                });
+            });
+        }
+
+        function getBottleSize() {
+            const selectedBottle = document.querySelector('input[name="bottleSize"]:checked');
+            if (!selectedBottle) return 0;
+            
+            if (selectedBottle.value === 'other') {
+                const customSize = parseFloat(document.getElementById('customBottleSize').value);
+                return isNaN(customSize) ? 0 : customSize;
+            }
+            
+            return parseFloat(selectedBottle.value);
+        }
+
+        function calculateMaintenance() {
+            const bottleSize = getBottleSize();
+            if (bottleSize === 0) {
+                document.getElementById('maintenanceDays').textContent = 'Select bottle size first';
+                document.getElementById('maintenanceDays').style.color = '#666';
+                document.getElementById('totalDays').textContent = '0';
+                return;
+            }
+
+            // Calculate total ml used in titration phases (exclude maintenance phase)
+            let totalMlUsed = 0;
+            let totalDays = 0;
+
+            document.querySelectorAll('.phase').forEach(phase => {
+                // Skip maintenance phase
+                if (phase.classList.contains('maintenance-phase')) {
+                    return;
+                }
+                
+                const phaseNum = phase.getAttribute('data-phase');
+                if (!phaseNum) return;
+                
+                const daysInput = phase.querySelector(`.phase-days[data-phase="${phaseNum}"]`);
+                const doseInput = phase.querySelector(`.phase-dose[data-phase="${phaseNum}"]`);
+                
+                if (daysInput && doseInput) {
+                    const days = parseFloat(daysInput.value) || 0;
+                    const dose = parseFloat(doseInput.value) || 0;
+                    
+                    totalMlUsed += days * dose;
+                    totalDays += days;
+                }
+            });
+
+            const remainingMl = bottleSize - totalMlUsed;
+            const maintenanceDose = parseFloat(document.getElementById('maintenanceDose').value) || 0;
+
+            if (maintenanceDose > 0) {
+                if (remainingMl < 0) {
+                    document.getElementById('maintenanceDays').textContent = '0 days (insufficient medication)';
+                    document.getElementById('maintenanceDays').style.color = '#e74c3c';
+                } else {
+                    const maintenanceDays = Math.floor(remainingMl / maintenanceDose);
+                    document.getElementById('maintenanceDays').textContent = `${maintenanceDays} days`;
+                    document.getElementById('maintenanceDays').style.color = '#2e7d32';
+                    totalDays += maintenanceDays;
+                }
+            } else {
+                document.getElementById('maintenanceDays').textContent = 'Enter maintenance dose';
+                document.getElementById('maintenanceDays').style.color = '#666';
+            }
+
+            document.getElementById('totalDays').textContent = totalDays;
+        }
+
+        // Allow Enter key to submit PIN
+        pinInputs.forEach(id => {
+            document.getElementById(id).addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkPin();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
